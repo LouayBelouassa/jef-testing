@@ -2,7 +2,7 @@ package com.jef.justenoughfakepixel.mixins;
 
 // Ported from PolyPatcher
 
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.JefConfig;
 import com.jef.justenoughfakepixel.events.RenderEntityModelEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;

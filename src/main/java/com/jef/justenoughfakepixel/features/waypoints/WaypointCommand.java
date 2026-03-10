@@ -3,7 +3,8 @@ package com.jef.justenoughfakepixel.features.waypoints;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.JefConfig;
+import com.jef.justenoughfakepixel.core.config.command.SimpleCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.command.ICommandSender;
@@ -16,7 +17,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class WaypointCommand extends com.jef.justenoughfakepixel.config.SimpleCommand {
+public class WaypointCommand extends SimpleCommand {
 
     public static final String PREFIX = "\u00a73[JW]\u00a7b ";
 

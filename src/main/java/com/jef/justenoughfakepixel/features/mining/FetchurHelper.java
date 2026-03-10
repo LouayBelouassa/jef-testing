@@ -1,6 +1,6 @@
 package com.jef.justenoughfakepixel.features.mining;
 
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.JefConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;

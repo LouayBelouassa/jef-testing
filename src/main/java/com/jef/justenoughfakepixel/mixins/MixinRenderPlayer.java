@@ -1,6 +1,6 @@
 package com.jef.justenoughfakepixel.mixins;
 
-import com.jef.justenoughfakepixel.features.PlayerSizeRepo;
+import com.jef.justenoughfakepixel.repo.PlayerSizeRepo;
 import com.jef.justenoughfakepixel.repo.data.PlayerSizeData;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;

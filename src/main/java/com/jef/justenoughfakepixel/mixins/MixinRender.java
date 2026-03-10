@@ -2,7 +2,7 @@ package com.jef.justenoughfakepixel.mixins;
 
 // Credit: PolyPatcher (https://github.com/Sk1erLLC/Patcher)
 
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.JefConfig;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

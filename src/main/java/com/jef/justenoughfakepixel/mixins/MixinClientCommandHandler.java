@@ -1,6 +1,6 @@
 package com.jef.justenoughfakepixel.mixins;
 
-import com.jef.justenoughfakepixel.config.SimpleCommand;
+import com.jef.justenoughfakepixel.core.config.command.SimpleCommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.spongepowered.asm.mixin.Mixin;

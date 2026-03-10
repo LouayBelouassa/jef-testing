@@ -1,0 +1,183 @@
+package com.jef.justenoughfakepixel.features.misc;
+
+// Ported from https://github.com/odtheking/OdinLegacy/blob/main/src/main/kotlin/me/odinmain/features/impl/render/PerformanceHUD.kt
+// Ping method ported from https://github.com/Skytils/SkytilsMod (AGPLv3)
+
+import com.jef.justenoughfakepixel.core.JefConfig;
+import com.jef.justenoughfakepixel.core.config.utils.Position;
+import com.jef.justenoughfakepixel.events.PacketReceiveStatsEvent;
+import com.jef.justenoughfakepixel.events.PacketReceiveTimeUpdateEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.network.play.client.C16PacketClientStatus;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PerformanceHUD {
+
+    private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static final int OVERLAY_WIDTH  = 100;
+    public static final int OVERLAY_HEIGHT = 45;
+    private static final int LINE_HEIGHT   = 10;
+    private static final int PADDING       = 3;
+
+    private static final String C_LABEL = EnumChatFormatting.AQUA.toString();
+    private static final String C_VAL   = EnumChatFormatting.WHITE.toString();
+
+    // TPS — rolling average over last 5 S03 packets
+    private static final int TPS_SAMPLES = 5;
+    private static final long[] tpsTimes = new long[TPS_SAMPLES];
+    private static int tpsHead = 0;
+    private static int tpsCount = 0;
+    private static float currentTps = 20f;
+
+    // Ping — Skytils stats-packet method
+    private static long pingSentAt = -1L;
+    private static double pingMs = -1;
+    private static int ticksSincePing = 0;
+    private static final int PING_INTERVAL_TICKS = 100; // ~5 seconds
+
+    @SubscribeEvent
+    public void onTimeUpdate(PacketReceiveTimeUpdateEvent event) {
+        long now = System.currentTimeMillis();
+        if (tpsCount > 0) {
+            int prev = (tpsHead - 1 + TPS_SAMPLES) % TPS_SAMPLES;
+            long delta = now - tpsTimes[prev];
+            if (delta > 0) {
+                float sample = 20_000f / delta;
+                currentTps = Math.max(0f, Math.min(20f, sample));
+            }
+        }
+        tpsTimes[tpsHead] = now;
+        tpsHead = (tpsHead + 1) % TPS_SAMPLES;
+        if (tpsCount < TPS_SAMPLES) tpsCount++;
+    }
+
+    @SubscribeEvent
+    public void onStats(PacketReceiveStatsEvent event) {
+        if (pingSentAt < 0) return;
+        pingMs = Math.abs(System.nanoTime() - pingSentAt) / 1_000_000.0;
+        pingSentAt = -1L;
+    }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        if (mc.thePlayer == null || mc.thePlayer.sendQueue == null) return;
+        if (pingSentAt >= 0) return; // already waiting for reply
+
+        ticksSincePing++;
+        if (ticksSincePing < PING_INTERVAL_TICKS) return;
+        ticksSincePing = 0;
+
+        pingSentAt = System.nanoTime();
+        mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
+                new C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS)
+        );
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        tpsCount = 0;
+        tpsHead  = 0;
+        currentTps = 20f;
+        pingSentAt = -1L;
+        pingMs = -1;
+        ticksSincePing = 0;
+    }
+
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
+        if (JefConfig.feature == null || !JefConfig.feature.misc.performanceHud) return;
+        renderOverlay(false);
+    }
+
+    private static int lastW = OVERLAY_WIDTH;
+    private static int lastH = OVERLAY_HEIGHT;
+    public static int getOverlayWidth()  { return lastW; }
+    public static int getOverlayHeight() { return lastH; }
+
+    public static void renderOverlay(boolean preview) {
+        if (JefConfig.feature == null) return;
+        List<String> lines = buildLines(preview);
+        if (lines.isEmpty()) return;
+
+        float scale = JefConfig.feature.misc.hudScale;
+        boolean vertical = JefConfig.feature.misc.hudVertical;
+        int w = estimateWidth(lines, vertical);
+        int h = vertical ? lines.size() * LINE_HEIGHT + PADDING * 2 : LINE_HEIGHT + PADDING * 2;
+        lastW = w; lastH = h;
+
+        ScaledResolution sr = new ScaledResolution(mc);
+        Position pos = JefConfig.feature.misc.hudPos;
+        int x = pos.getAbsX(sr, (int)(w * scale));
+        int y = pos.getAbsY(sr, (int)(h * scale));
+        if (pos.isCenterX()) x -= (int)(w * scale / 2);
+        if (pos.isCenterY()) y -= (int)(h * scale / 2);
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(x, y, 0);
+        GL11.glScalef(scale, scale, 1f);
+
+        if (JefConfig.feature.misc.hudBackground)
+            Gui.drawRect(-PADDING, -PADDING, w, h - PADDING, 0x88000000);
+
+        if (vertical) {
+            int dy = 0;
+            for (String line : lines) {
+                mc.fontRendererObj.drawStringWithShadow(line, 0, dy, 0xFFFFFF);
+                dy += LINE_HEIGHT;
+            }
+        } else {
+            int cx = 0;
+            for (String line : lines) {
+                mc.fontRendererObj.drawStringWithShadow(line, cx, 0, 0xFFFFFF);
+                cx += mc.fontRendererObj.getStringWidth(line) + 6;
+            }
+        }
+
+        GL11.glPopMatrix();
+    }
+
+    static List<String> buildLines(boolean preview) {
+        if (JefConfig.feature == null) return new ArrayList<>();
+        List<String> out = new ArrayList<>();
+        if (JefConfig.feature.misc.hudShowFps)
+            out.add(C_LABEL + "FPS: " + C_VAL + (preview ? 60 : Minecraft.getDebugFPS()));
+        if (JefConfig.feature.misc.hudShowTps)
+            out.add(C_LABEL + "TPS: " + C_VAL + (preview ? "20.0" : String.format("%.1f", currentTps)));
+        if (JefConfig.feature.misc.hudShowPing)
+            out.add(C_LABEL + "Ping: " + C_VAL + (preview ? "42ms" : formatPing()));
+        return out;
+    }
+
+    private static String formatPing() {
+        if (pingMs < 0) return "...";
+        return String.format("%.0fms", pingMs);
+    }
+
+    private static int estimateWidth(List<String> lines, boolean vertical) {
+        if (vertical) {
+            int max = OVERLAY_WIDTH;
+            for (String l : lines) max = Math.max(max, mc.fontRendererObj.getStringWidth(l) + PADDING * 2);
+            return max;
+        }
+        int total = 0;
+        for (String l : lines) total += mc.fontRendererObj.getStringWidth(l) + 6;
+        return Math.max(total, OVERLAY_WIDTH);
+    }
+
+    private static PerformanceHUD instance;
+    public PerformanceHUD() { instance = this; }
+    public static PerformanceHUD getInstance() { return instance; }
+}

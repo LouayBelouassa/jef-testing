@@ -1,7 +1,7 @@
 package com.jef.justenoughfakepixel.features.waypoints;
 
-import com.jef.justenoughfakepixel.config.ChromaColour;
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.config.editors.ChromaColour;
+import com.jef.justenoughfakepixel.core.JefConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;

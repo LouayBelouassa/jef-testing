@@ -1,7 +1,7 @@
 package com.jef.justenoughfakepixel.features.dungeons;
 
-import com.jef.justenoughfakepixel.config.JefConfig;
-import com.jef.justenoughfakepixel.config.Position;
+import com.jef.justenoughfakepixel.core.JefConfig;
+import com.jef.justenoughfakepixel.core.config.utils.Position;
 import com.jef.justenoughfakepixel.utils.ScoreboardUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

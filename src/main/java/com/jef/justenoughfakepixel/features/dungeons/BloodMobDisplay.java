@@ -1,6 +1,6 @@
 package com.jef.justenoughfakepixel.features.dungeons;
 
-import com.jef.justenoughfakepixel.config.JefConfig;
+import com.jef.justenoughfakepixel.core.JefConfig;
 import com.jef.justenoughfakepixel.utils.ScoreboardUtils;
 import com.jef.justenoughfakepixel.events.RenderEntityModelEvent;
 import com.jef.justenoughfakepixel.utils.EntityHighlightUtils;
