@@ -14,7 +14,7 @@ A Quality-of-life mod made for fakepixel skyblock.
 ## Diana
 * Diana Tracker
 * Party commands for diana
- !borrows, !inq, !mobs, !time, !chim, !stick, !relic, !loot
+ !help
 
 ## Misc
 * Item Stack Utils
