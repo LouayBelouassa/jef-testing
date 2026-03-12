@@ -1,16 +1,16 @@
 
 # JEF 1.2.0 - 1.2.1 Changelog
 
+## fixes 
+!pb command refactored
+fixed overlays blocking view of debug, tab
+added skyblock located detection for each feature respectively.
 
 ## Additions
 
-DianaTracker — tracks borrows, inquisitors, mobs, time, chimeras
-DianaStats — persistent stats saved to disk
-DianaMobDetect — detects Diana-related mob spawns
-DianaEventOverlay — HUD showing playtime, borrows, mob rates
-DianaLootOverlay — HUD showing chimeras and drops
-DianaCommand — in-game command for Diana
-DianaData — data model
+* DianaTracker
+* Event and loot overlays
+* Party commands for diana
+  !help
 
-!pb was also refactored to be cleaner
-!borrows, !inq, !mobs, !time, !chim, !stick, !relic, !loot, !help added
+
