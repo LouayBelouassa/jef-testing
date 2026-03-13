@@ -1,6 +1,8 @@
 package com.jef.justenoughfakepixel;
 
 import com.jef.justenoughfakepixel.core.JefConfig;
+import com.jef.justenoughfakepixel.core.config.command.FarmingCommand;
+import com.jef.justenoughfakepixel.core.config.command.GetStatCommand;
 import com.jef.justenoughfakepixel.core.config.command.SimpleCommandFilter;
 import com.jef.justenoughfakepixel.utils.ItemStackUtils;
 import com.jef.justenoughfakepixel.utils.PartyCommands;
@@ -93,5 +95,9 @@ public class JefMod {
         MinecraftForge.EVENT_BUS.register(new DianaLootOverlay());
         ClientCommandHandler.instance.registerCommand(new DianaCommand());
         ClientCommandHandler.instance.registerCommand(new WaypointCommand());
+        ClientCommandHandler.instance.registerCommand(new FarmingCommand());
+        ClientCommandHandler.instance.registerCommand(new GetStatCommand());
+
+
     }
 }

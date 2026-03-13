@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class ItemStackUtils {
@@ -86,13 +87,23 @@ public class ItemStackUtils {
         return name.equals(strip(cc.getLowerChestInventory().getDisplayName().getUnformattedText()));
     }
 
-    private static String getSkyblockId(ItemStack stack) {
+    static String getSkyblockId(ItemStack stack) {
         if (stack == null || !stack.hasTagCompound()) return null;
         NBTTagCompound extra = stack.getTagCompound().getCompoundTag("ExtraAttributes");
         return extra.hasKey("id") ? extra.getString("id") : null;
     }
 
+    public static String getNbtFromItemStack(ItemStack item) {
+        if (!item.hasTagCompound() || item==null){
+            return null;
+        }
+        return item.getTagCompound().toString();
+    }
     private static String strip(String s) {
         return s == null ? "" : STRIP_COLOR.matcher(s).replaceAll("");
     }
+
+
+
+
 }
